@@ -11,6 +11,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const DEMO_MODE_KEY = '@unraid:demo_mode';
 const LOCALE_KEY = '@unraid:locale';
 
+export interface SavedServer {
+  id: string;
+  name: string;
+  serverIP: string;
+  apiKey: string;
+}
+
 class StorageService {
   /**
    * Demo mode management
@@ -43,7 +50,7 @@ class StorageService {
   /**
    * Server management (multi-server)
    */
-  async getServers(): Promise<Array<{ id: string; name: string; serverIP: string; apiKey: string }>> {
+  async getServers(): Promise<SavedServer[]> {
     try {
       const raw = await AsyncStorage.getItem(AppConfig.storage.keys.servers);
       if (!raw) return [];
@@ -55,10 +62,129 @@ class StorageService {
     }
   }
 
-  async saveServers(servers: Array<{ id: string; name: string; serverIP: string; apiKey: string }>): Promise<void> {
+  async saveServers(servers: SavedServer[]): Promise<void> {
     await AsyncStorage.setItem(AppConfig.storage.keys.servers, JSON.stringify(servers));
   }
 
+  /**
+   * Get the currently active server ID
+   */
+  async getActiveServerId(): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem(AppConfig.storage.keys.activeServerId);
+    } catch (error) {
+      console.error('Storage: getActiveServerId error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Set the active server by ID
+   * This atomically updates both the active server ID and credentials
+   */
+  async setActiveServerId(serverId: string | null): Promise<void> {
+    try {
+      if (serverId === null) {
+        await AsyncStorage.removeItem(AppConfig.storage.keys.activeServerId);
+        return;
+      }
+      await AsyncStorage.setItem(AppConfig.storage.keys.activeServerId, serverId);
+    } catch (error) {
+      console.error('Storage: setActiveServerId error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get the active server details (combines active ID lookup with server list)
+   */
+  async getActiveServer(): Promise<SavedServer | null> {
+    try {
+      const activeId = await this.getActiveServerId();
+      if (!activeId) return null;
+      
+      const servers = await this.getServers();
+      return servers.find(s => s.id === activeId) || null;
+    } catch (error) {
+      console.error('Storage: getActiveServer error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Switch to a different server - atomic operation
+   * Updates active server ID and credentials together
+   */
+  async switchToServer(server: SavedServer): Promise<void> {
+    console.log('Storage: switchToServer:', server.name);
+    try {
+      // Clear the Apollo cache flag to signal cache should be cleared
+      await AsyncStorage.setItem('@unraid:cache_invalidated', Date.now().toString());
+      
+      // Update active server ID and credentials atomically
+      await AsyncStorage.multiSet([
+        [AppConfig.storage.keys.activeServerId, server.id],
+        [AppConfig.storage.keys.serverIP, server.serverIP],
+        [AppConfig.storage.keys.apiKey, server.apiKey],
+        [AppConfig.storage.keys.isAuthenticated, 'true'],
+      ]);
+      
+      console.log('Storage: Server switched successfully to:', server.name);
+    } catch (error) {
+      console.error('Storage: switchToServer error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Add a new server and optionally make it active
+   */
+  async addServer(server: SavedServer, makeActive: boolean = false): Promise<void> {
+    try {
+      const servers = await this.getServers();
+      const updated = [...servers, server];
+      await this.saveServers(updated);
+      
+      if (makeActive) {
+        await this.switchToServer(server);
+      }
+      
+      console.log('Storage: Server added:', server.name, makeActive ? '(active)' : '');
+    } catch (error) {
+      console.error('Storage: addServer error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Remove a server from the list
+   * If it's the active server, clears active state
+   */
+  async removeServer(serverId: string): Promise<void> {
+    try {
+      const servers = await this.getServers();
+      const activeId = await this.getActiveServerId();
+      
+      const updated = servers.filter(s => s.id !== serverId);
+      await this.saveServers(updated);
+      
+      // If we removed the active server, clear credentials
+      if (activeId === serverId) {
+        await this.setActiveServerId(null);
+        await this.clearCredentials();
+        console.log('Storage: Active server was removed, credentials cleared');
+      }
+      
+      console.log('Storage: Server removed:', serverId);
+    } catch (error) {
+      console.error('Storage: removeServer error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * @deprecated Use switchToServer instead
+   */
   async setActiveServer(server: { serverIP: string; apiKey: string }): Promise<void> {
     await this.saveCredentials({ serverIP: server.serverIP, apiKey: server.apiKey });
   }

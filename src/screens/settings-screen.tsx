@@ -12,7 +12,7 @@ import { useTheme } from '@/src/providers/theme-provider';
 import { useApolloClient } from '@apollo/client/react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Modal,
@@ -78,7 +78,7 @@ function useAdaptiveBottomTabPadding() {
 
 export function SettingsScreen() {
   const { theme, isDark, setTheme } = useTheme();
-  const { logout, credentials, checkAuth } = useAuth();
+  const { logout, credentials, activeServerName, checkAuth } = useAuth();
   const { locale, setLocale, availableLocales } = useLocalization();
   const { t } = useLocalization();
   const paperTheme = usePaperTheme();
@@ -362,16 +362,22 @@ export function SettingsScreen() {
 
             <UiSection title="Server Information">
               <UiHStack spacing={8}>
-                <UiImage systemName="network" />
-                <UiText size={17}>Server IP</UiText>
+                <UiImage systemName="server.rack" />
+                <UiText size={17}>Active Server</UiText>
                 <UiSpacer />
-                <UiText size={17}>{credentials?.serverIP || 'Not connected'}</UiText>
+                <UiText size={17}>{activeServerName || 'Not connected'}</UiText>
+              </UiHStack>
+              <UiHStack spacing={8}>
+                <UiImage systemName="network" />
+                <UiText size={17}>Server URL</UiText>
+                <UiSpacer />
+                <UiText size={15}>{credentials?.serverIP || 'N/A'}</UiText>
               </UiHStack>
               <UiHStack spacing={8}>
                 <UiImage systemName="checkmark.circle.fill" />
                 <UiText size={17}>Connection Status</UiText>
                 <UiSpacer />
-                <UiText size={17}>Connected</UiText>
+                <UiText size={17} color="#34c759">Connected</UiText>
               </UiHStack>
               <UiHStack spacing={8}>
                 <UiImage systemName="info.circle" />
@@ -520,10 +526,19 @@ export function SettingsScreen() {
             {t('settings.serverInformation')}
           </PaperText>
           <List.Item
+            title="Active Server"
+            titleStyle={{ color: textPrimary }}
+            description={activeServerName || t('settings.notConnected')}
+            descriptionStyle={{ color: successColor, fontWeight: '500' }}
+            left={(props) => <List.Icon {...props} icon="server" color={successColor} />}
+          />
+          <Divider style={{ backgroundColor: dividerColor }} />
+          <List.Item
             title={t('settings.serverIP')}
             titleStyle={{ color: textPrimary }}
-            description={credentials?.serverIP || t('settings.notConnected')}
+            description={credentials?.serverIP || 'N/A'}
             descriptionStyle={{ color: textSecondary }}
+            descriptionNumberOfLines={2}
             left={(props) => <List.Icon {...props} icon="ip-network" color={iconColor} />}
           />
           <Divider style={{ backgroundColor: dividerColor }} />
