@@ -1,19 +1,16 @@
 import { Card } from '@/src/components/ui/card';
-import { useServerManagement } from '@/src/hooks/useServerManagement';
+import { ServerWithActiveStatus, useServerManagement } from '@/src/hooks/useServerManagement';
 import { useLocalization } from '@/src/providers/localization-provider';
 import { useTheme } from '@/src/providers/theme-provider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { Alert, FlatList, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import {
-  Dialog,
+  Chip,
   Divider,
-  IconButton,
   Button as PaperButton,
   Card as PaperCard,
   Text as PaperText,
   TextInput as PaperTextInput,
-  Portal,
   Surface,
   useTheme as usePaperTheme
 } from 'react-native-paper';
@@ -24,9 +21,11 @@ let UiButton: any;
 let UiForm: any;
 let UiHost: any;
 let UiHStack: any;
+let UiImage: any;
 let UiSection: any;
 let UiSpacer: any;
 let UiText: any;
+let UiVStack: any;
 
 if (Platform.OS === 'ios') {
   const swiftUIModule = require('@expo/ui/swift-ui');
@@ -34,17 +33,17 @@ if (Platform.OS === 'ios') {
   UiForm = swiftUIModule.Form;
   UiHost = swiftUIModule.Host;
   UiHStack = swiftUIModule.HStack;
+  UiImage = swiftUIModule.Image;
   UiSection = swiftUIModule.Section;
   UiSpacer = swiftUIModule.Spacer;
   UiText = swiftUIModule.Text;
+  UiVStack = swiftUIModule.VStack;
 }
 
 export function ServerManagementScreen() {
   const { isDark } = useTheme();
   const { t } = useLocalization();
   const paperTheme = usePaperTheme();
-  const [showDeleteDialog, setShowDeleteDialog] = useState<string | null>(null);
-  const [showAddDialog, setShowAddDialog] = useState(false);
 
   const {
     servers,
@@ -52,6 +51,7 @@ export function ServerManagementScreen() {
     serverIP,
     apiKey,
     busy,
+    connectionError,
     setName,
     setServerIP,
     setApiKey,
@@ -60,18 +60,15 @@ export function ServerManagementScreen() {
     makeActive,
   } = useServerManagement();
 
-  const handleRemoveServer = (id: string, serverName: string) => {
-    if (Platform.OS === 'ios') {
-      Alert.alert('Remove Server', `Are you sure you want to remove ${serverName}?`, [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Remove', style: 'destructive', onPress: () => removeServer(id) },
-      ]);
-    } else {
-      setShowDeleteDialog(id);
-    }
+  const handleAddServer = async () => {
+    // Add server but don't automatically make it active (unless it's the first)
+    await addServer(false);
   };
 
-  const serverToDelete = servers.find((s) => s.id === showDeleteDialog);
+  const handleRemoveServer = (id: string) => {
+    // The removeServer function now handles confirmation internally
+    removeServer(id);
+  };
 
   // iOS: Use SwiftUI-based UI for native feel
   if (Platform.OS === 'ios' && UiHost) {
@@ -137,12 +134,15 @@ export function ServerManagementScreen() {
                 secureTextEntry
               />
             </View>
+            {connectionError && (
+              <Text style={styles.errorText}>{connectionError}</Text>
+            )}
             <TouchableOpacity
               style={[styles.primaryBtn, { opacity: busy ? 0.5 : 1 }]}
               disabled={busy}
-              onPress={addServer}
+              onPress={handleAddServer}
             >
-              <Text style={styles.primaryBtnText}>Add Server</Text>
+              <Text style={styles.primaryBtnText}>{busy ? 'Connecting...' : 'Add Server'}</Text>
             </TouchableOpacity>
           </Card>
         </View>
@@ -155,14 +155,24 @@ export function ServerManagementScreen() {
               ) : (
                 servers.map((item) => (
                   <UiHStack key={item.id} spacing={8}>
-                    <UiText size={17}>{item.name}</UiText>
-                    <UiSpacer />
-                    <UiButton onPress={() => makeActive(item)}>
-                      <UiText size={15} color="#007aff">
-                        Make Active
+                    {item.isActive && <UiImage systemName="checkmark.circle.fill" />}
+                    <UiText size={17} style={{ fontWeight: item.isActive ? '600' : '400' }}>
+                      {item.name}
+                    </UiText>
+                    {item.isActive && (
+                      <UiText size={13} color="#34c759">
+                        Active
                       </UiText>
-                    </UiButton>
-                    <UiButton onPress={() => handleRemoveServer(item.id, item.name)}>
+                    )}
+                    <UiSpacer />
+                    {!item.isActive && (
+                      <UiButton onPress={() => makeActive(item)}>
+                        <UiText size={15} color="#007aff">
+                          Connect
+                        </UiText>
+                      </UiButton>
+                    )}
+                    <UiButton onPress={() => handleRemoveServer(item.id)}>
                       <UiText size={15} color="#ff3b30">
                         Remove
                       </UiText>
@@ -233,36 +243,67 @@ export function ServerManagementScreen() {
                 left={<PaperTextInput.Icon icon="key" />}
               />
 
+              {connectionError && (
+                <PaperText variant="bodySmall" style={{ color: '#ff3b30', marginBottom: 8 }}>
+                  {connectionError}
+                </PaperText>
+              )}
+
               <PaperButton
                 mode="contained"
-                onPress={addServer}
+                onPress={handleAddServer}
                 loading={busy}
                 disabled={busy}
                 style={styles.addButton}
                 icon="plus"
               >
-                Add Server
+                {busy ? 'Connecting...' : 'Add Server'}
               </PaperButton>
             </Surface>
 
             <PaperText variant="titleMedium" style={{ fontWeight: '600', marginTop: 24, marginBottom: 12 }}>
-              Saved Servers
+              Saved Servers ({servers.length})
             </PaperText>
           </View>
         }
         data={servers}
         keyExtractor={(s) => s.id}
-        renderItem={({ item }) => (
-          <PaperCard style={styles.serverCard} mode="elevated">
+        renderItem={({ item }: { item: ServerWithActiveStatus }) => (
+          <PaperCard 
+            style={[
+              styles.serverCard, 
+              item.isActive && { borderWidth: 2, borderColor: '#34c759' }
+            ]} 
+            mode="elevated"
+          >
             <PaperCard.Content>
               <View style={styles.serverHeader}>
-                <View style={styles.serverIconContainer}>
-                  <MaterialCommunityIcons name="server" size={28} color={paperTheme.colors.primary} />
+                <View style={[
+                  styles.serverIconContainer,
+                  item.isActive && { backgroundColor: '#34c75915' }
+                ]}>
+                  <MaterialCommunityIcons 
+                    name={item.isActive ? 'server-network' : 'server'} 
+                    size={28} 
+                    color={item.isActive ? '#34c759' : paperTheme.colors.primary} 
+                  />
                 </View>
                 <View style={styles.serverInfo}>
-                  <PaperText variant="titleMedium" style={{ fontWeight: '600' }}>
-                    {item.name}
-                  </PaperText>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <PaperText variant="titleMedium" style={{ fontWeight: '600' }}>
+                      {item.name}
+                    </PaperText>
+                    {item.isActive && (
+                      <Chip 
+                        mode="flat" 
+                        compact 
+                        style={{ backgroundColor: '#34c75920' }}
+                        textStyle={{ color: '#34c759', fontSize: 11 }}
+                      >
+                        Active
+                      </Chip>
+                    )}
+                  </View>
                   <PaperText
                     variant="bodySmall"
                     style={{ color: paperTheme.colors.onSurfaceVariant }}
@@ -271,29 +312,38 @@ export function ServerManagementScreen() {
                     {item.serverIP}
                   </PaperText>
                 </View>
-                <IconButton
-                  icon="dots-vertical"
-                  onPress={() => {}}
-                  disabled={busy}
-                />
               </View>
 
               <Divider style={{ marginVertical: 12 }} />
 
               <View style={styles.serverActions}>
-                <PaperButton
-                  mode="contained"
-                  onPress={() => makeActive(item)}
-                  disabled={busy}
-                  compact
-                  icon="check"
-                  style={styles.serverActionButton}
-                >
-                  Make Active
-                </PaperButton>
+                {item.isActive ? (
+                  <PaperButton
+                    mode="contained"
+                    disabled
+                    compact
+                    icon="check-circle"
+                    style={[styles.serverActionButton, { backgroundColor: '#34c759' }]}
+                    labelStyle={{ color: '#fff' }}
+                  >
+                    Connected
+                  </PaperButton>
+                ) : (
+                  <PaperButton
+                    mode="contained"
+                    onPress={() => makeActive(item)}
+                    disabled={busy}
+                    loading={busy}
+                    compact
+                    icon="power"
+                    style={styles.serverActionButton}
+                  >
+                    Connect
+                  </PaperButton>
+                )}
                 <PaperButton
                   mode="outlined"
-                  onPress={() => handleRemoveServer(item.id, item.name)}
+                  onPress={() => handleRemoveServer(item.id)}
                   disabled={busy}
                   compact
                   icon="delete"
@@ -320,37 +370,11 @@ export function ServerManagementScreen() {
               variant="bodySmall"
               style={{ color: paperTheme.colors.onSurfaceVariant, marginTop: 4, textAlign: 'center' }}
             >
-              Add your first server above
+              Add your first server above to get started
             </PaperText>
           </Surface>
         }
       />
-
-      {/* Delete Confirmation Dialog */}
-      <Portal>
-        <Dialog visible={!!showDeleteDialog} onDismiss={() => setShowDeleteDialog(null)}>
-          <Dialog.Title>Remove Server</Dialog.Title>
-          <Dialog.Content>
-            <PaperText variant="bodyMedium">
-              Are you sure you want to remove "{serverToDelete?.name}"? This action cannot be undone.
-            </PaperText>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <PaperButton onPress={() => setShowDeleteDialog(null)}>Cancel</PaperButton>
-            <PaperButton
-              textColor="#ff3b30"
-              onPress={() => {
-                if (showDeleteDialog) {
-                  removeServer(showDeleteDialog);
-                  setShowDeleteDialog(null);
-                }
-              }}
-            >
-              Remove
-            </PaperButton>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
     </SafeAreaView>
   );
 }
@@ -392,6 +416,12 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '600',
     fontSize: 16,
+  },
+  errorText: {
+    color: '#ff3b30',
+    fontSize: 13,
+    marginBottom: 8,
+    marginTop: -4,
   },
   // Paper styles
   addServerCard: {

@@ -10,7 +10,7 @@ import { authService } from '@/src/services/auth.service';
 import { storageService } from '@/src/services/storage.service';
 import type { UnraidCredentials } from '@/src/types/unraid.types';
 import { Image } from 'expo-image';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -115,6 +115,21 @@ export function LoginScreen({ onSuccess }: LoginScreenProps) {
       const result = await authService.login(credentials);
 
       if (result.success) {
+        // Create a server entry for first-time login
+        const serverId = 'srv_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+        const serverName = serverIP.trim()
+          .replace(/^https?:\/\//, '')
+          .replace(/\/.*$/, '')
+          .replace(/:.*$/, '') || 'My Unraid Server';
+        
+        // Add to server list and set as active
+        await storageService.addServer({
+          id: serverId,
+          name: serverName,
+          serverIP: fullServerUrl,
+          apiKey: apiKey.trim(),
+        }, true);
+        
         // Trigger Apollo Client recreation by calling onSuccess
         // The ApolloProvider will recreate the client with new credentials
         onSuccess();
