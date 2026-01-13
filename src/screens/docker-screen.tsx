@@ -152,7 +152,7 @@ export function DockerScreen() {
       await startContainer({ variables: { id } });
       await refetch();
     } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to start container');
+      Alert.alert(t('common.error'), e.message || t('docker.errorStartContainer'));
     }
   };
 
@@ -165,7 +165,7 @@ export function DockerScreen() {
       await stopContainer({ variables: { id } });
       await refetch();
     } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to stop container');
+      Alert.alert(t('common.error'), e.message || t('docker.errorStopContainer'));
     }
   };
 
@@ -179,7 +179,7 @@ export function DockerScreen() {
       await startContainer({ variables: { id } });
       await refetch();
     } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to restart container');
+      Alert.alert(t('common.error'), e.message || t('docker.errorRestartContainer'));
     }
   };
 
@@ -220,12 +220,12 @@ export function DockerScreen() {
         <UiHost style={{ flex: 1, backgroundColor: isDark ? '#000000' : '#f2f2f7' }} colorScheme={isDark ? 'dark' : 'light'}>
           <UiForm>
             <UiSection>
-              <UiVStack alignment="leading" spacing={20} modifiers={[padding({ all: 24 })]}>
+                <UiVStack alignment="leading" spacing={20} modifiers={[padding({ all: 24 })]}>
                 <UiHStack alignment="center" spacing={20} modifiers={[frame({ maxWidth: Number.POSITIVE_INFINITY })]}>
                   <UiVStack alignment="leading" spacing={8} modifiers={[layoutPriority(1)]}>
-                    <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>Docker</UiText>
+                    <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>{t('docker.title')}</UiText>
                     <UiText size={34} weight="bold">
-                      {totals.total === 0 ? 'No Data' : `${totals.total}`}
+                      {totals.total === 0 ? t('common.noData') : `${totals.total}`}
                     </UiText>
                   </UiVStack>
                   <UiSpacer />
@@ -242,7 +242,7 @@ export function DockerScreen() {
                   <UiHStack spacing={12} alignment="center">
                     <UiText size={24} color="#007aff">●</UiText>
                     <UiVStack alignment="leading" spacing={4} modifiers={[layoutPriority(1)]}>
-                      <UiText size={17} weight="semibold">Total</UiText>
+                      <UiText size={17} weight="semibold">{t('docker.total')}</UiText>
                       <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>
                         {totals.total === 0 ? t('docker.noContainersDetected') : t('docker.combinedContainers')}
                       </UiText>
@@ -254,7 +254,7 @@ export function DockerScreen() {
                   <UiHStack spacing={12} alignment="center">
                     <UiText size={24} color="#34c759">●</UiText>
                     <UiVStack alignment="leading" spacing={4} modifiers={[layoutPriority(1)]}>
-                      <UiText size={17} weight="semibold">Running</UiText>
+                      <UiText size={17} weight="semibold">{t('docker.running')}</UiText>
                       <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>
                         {totals.running === 0 ? t('docker.noContainersActive') : t('docker.currentlyActive')}
                       </UiText>
@@ -266,7 +266,7 @@ export function DockerScreen() {
                   <UiHStack spacing={12} alignment="center">
                     <UiText size={24} color="#ff3b30">●</UiText>
                     <UiVStack alignment="leading" spacing={4} modifiers={[layoutPriority(1)]}>
-                      <UiText size={17} weight="semibold">Stopped</UiText>
+                      <UiText size={17} weight="semibold">{t('docker.stopped')}</UiText>
                       <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>
                         {totals.stopped === 0 ? t('docker.noContainersStopped') : t('docker.currentlyInactive')}
                       </UiText>
@@ -277,7 +277,7 @@ export function DockerScreen() {
                 </UiVStack>
               </UiVStack>
             </UiSection>
-            <UiSection title="Containers">
+            <UiSection title={t('docker.containers')}>
               {filteredContainers.length === 0 ? <UiText size={15}>{t('docker.noContainers')}</UiText> : null}
               {filteredContainers.map((item) => {
                 const isRunning = item.state?.toLowerCase() === 'running';
@@ -315,10 +315,10 @@ export function DockerScreen() {
         {/* Header */}
         <View style={styles.header}>
           <PaperText variant="headlineMedium" style={{ fontWeight: 'bold', color: paperTheme.colors.onBackground }}>
-            Docker
+            {t('docker.title')}
           </PaperText>
           <PaperText variant="bodyMedium" style={{ color: paperTheme.colors.onSurfaceVariant, marginTop: 4 }}>
-            {t('docker.manageContainers') || 'Manage your containers'}
+            {t('docker.manageContainers')}
           </PaperText>
         </View>
 
@@ -330,21 +330,21 @@ export function DockerScreen() {
                 <View style={[styles.statDot, { backgroundColor: '#007aff' }]} />
                 <View>
                   <PaperText variant="headlineLarge" style={{ fontWeight: 'bold' }}>{totals.total}</PaperText>
-                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Total</PaperText>
+                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('docker.total')}</PaperText>
                 </View>
               </View>
               <View style={styles.statItem}>
                 <View style={[styles.statDot, { backgroundColor: '#34c759' }]} />
                 <View>
                   <PaperText variant="headlineLarge" style={{ fontWeight: 'bold', color: '#34c759' }}>{totals.running}</PaperText>
-                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Running</PaperText>
+                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('docker.running')}</PaperText>
                 </View>
               </View>
               <View style={styles.statItem}>
                 <View style={[styles.statDot, { backgroundColor: '#ff3b30' }]} />
                 <View>
                   <PaperText variant="headlineLarge" style={{ fontWeight: 'bold', color: '#ff3b30' }}>{totals.stopped}</PaperText>
-                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Stopped</PaperText>
+                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('docker.stopped')}</PaperText>
                 </View>
               </View>
             </View>
@@ -352,7 +352,7 @@ export function DockerScreen() {
           {totals.total > 0 && (
             <View style={styles.progressSection}>
               <View style={styles.progressLabels}>
-                <PaperText variant="labelSmall">Running</PaperText>
+                <PaperText variant="labelSmall">{t('docker.running')}</PaperText>
                 <PaperText variant="labelSmall">{((totals.running / totals.total) * 100).toFixed(0)}%</PaperText>
               </View>
               <ProgressBar
@@ -376,7 +376,7 @@ export function DockerScreen() {
         {/* Container List */}
         <View style={styles.section}>
           <PaperText variant="titleMedium" style={{ marginBottom: 12, fontWeight: '600' }}>
-            Containers
+            {t('docker.containers')}
           </PaperText>
 
           {filteredContainers.length === 0 ? (
@@ -446,7 +446,7 @@ export function DockerScreen() {
                           title={t('docker.restart')}
                         />
                         <Divider />
-                        <Menu.Item leadingIcon="information-outline" onPress={() => setMenuVisible(null)} title="Details" />
+                        <Menu.Item leadingIcon="information-outline" onPress={() => setMenuVisible(null)} title={t('docker.details')} />
                       </Menu>
                     </View>
 
@@ -460,7 +460,7 @@ export function DockerScreen() {
                         style={{ backgroundColor: isRunning ? '#34c75915' : '#ff3b3015' }}
                         textStyle={{ color: isRunning ? '#34c759' : '#ff3b30', fontSize: 12 }}
                       >
-                        {isRunning ? 'Running' : 'Stopped'}
+                        {isRunning ? t('docker.running') : t('docker.stopped')}
                       </Chip>
                       {uptime && (
                         <PaperText variant="labelSmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>
@@ -490,7 +490,7 @@ export function DockerScreen() {
                         icon="restart"
                         style={styles.actionButton}
                       >
-                        Restart
+                        {t('docker.restart')}
                       </PaperButton>
                     </View>
                   </PaperCard.Content>

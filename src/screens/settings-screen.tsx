@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
+  Linking,
   Modal,
   Platform,
   ScrollView,
@@ -303,7 +304,7 @@ export function SettingsScreen() {
       <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#000000' : '#f2f2f7' }]} edges={['top']}>
         <UiHost style={{ flex: 1 }} colorScheme={isDark ? 'dark' : 'light'}>
           <UiForm>
-            <UiSection title="Appearance">
+            <UiSection title={t('settings.appearance')}>
               <UiHStack spacing={8}>
                 <UiImage systemName="aqi.medium" />
                 <UiText size={17}>{t('settings.automatic')}</UiText>
@@ -332,56 +333,56 @@ export function SettingsScreen() {
               </UiButton>
             </UiSection>
 
-            <UiSection title="Management">
+            <UiSection title={t('settings.management')}>
               <UiButton onPress={() => router.push('/servers')}>
                 <UiHStack spacing={8}>
                   <UiImage systemName="server.rack" />
-                  <UiText size={17}>Servers</UiText>
+                  <UiText size={17}>{t('servers.title')}</UiText>
                   <UiSpacer />
                   <UiImage systemName="chevron.right" />
                 </UiHStack>
               </UiButton>
             </UiSection>
 
-            <UiSection title="Data Refresh">
+            <UiSection title={t('settings.dataRefresh')}>
               <UiButton onPress={handlePollingIntervalChange}>
                 <UiHStack spacing={8}>
                   <UiImage systemName="speedometer" />
-                  <UiText size={17}>Polling Frequency</UiText>
+                  <UiText size={17}>{t('settings.pollingFrequency')}</UiText>
                   <UiSpacer />
                   <UiText size={17}>{getPollingIntervalLabel()}</UiText>
                 </UiHStack>
               </UiButton>
               <UiHStack spacing={8}>
                 <UiImage systemName="arrow.clockwise" />
-                <UiText size={17}>Manual Refresh</UiText>
+                <UiText size={17}>{t('settings.manualRefresh')}</UiText>
                 <UiSpacer />
-                <UiText size={17}>Pull to refresh</UiText>
+                <UiText size={17}>{t('settings.pullToRefresh')}</UiText>
               </UiHStack>
             </UiSection>
 
-            <UiSection title="Server Information">
+            <UiSection title={t('settings.serverInformation')}>
               <UiHStack spacing={8}>
                 <UiImage systemName="server.rack" />
-                <UiText size={17}>Active Server</UiText>
+                <UiText size={17}>{t('settings.activeServer')}</UiText>
                 <UiSpacer />
-                <UiText size={17}>{activeServerName || 'Not connected'}</UiText>
+                <UiText size={17}>{activeServerName || t('settings.notConnected')}</UiText>
               </UiHStack>
               <UiHStack spacing={8}>
                 <UiImage systemName="network" />
-                <UiText size={17}>Server URL</UiText>
+                <UiText size={17}>{t('settings.serverUrl')}</UiText>
                 <UiSpacer />
                 <UiText size={15}>{credentials?.serverIP || 'N/A'}</UiText>
               </UiHStack>
               <UiHStack spacing={8}>
                 <UiImage systemName="checkmark.circle.fill" />
-                <UiText size={17}>Connection Status</UiText>
+                <UiText size={17}>{t('settings.connectionStatus')}</UiText>
                 <UiSpacer />
-                <UiText size={17} color="#34c759">Connected</UiText>
+                <UiText size={17} color="#34c759">{t('settings.connected')}</UiText>
               </UiHStack>
               <UiHStack spacing={8}>
                 <UiImage systemName="info.circle" />
-                <UiText size={17}>Version</UiText>
+                <UiText size={17}>{t('settings.version')}</UiText>
                 <UiSpacer />
                 <UiText size={17}>1.0.0</UiText>
               </UiHStack>
@@ -393,10 +394,10 @@ export function SettingsScreen() {
               </UiHStack>
             </UiSection>
 
-            <UiSection title={t('settings.actions') || 'Actions'}>
+            <UiSection title={t('settings.actions')}>
               <UiButton
                 onPress={() => {
-                  Alert.alert(t('settings.clearCache') || 'Clear Cache', t('settings.clearCacheDescription') || 'This will clear all cached data.', [
+                  Alert.alert(t('settings.clearCache'), t('settings.clearCacheDescription'), [
                     { text: t('common.cancel'), style: 'cancel' },
                     {
                       text: t('common.delete'),
@@ -410,15 +411,34 @@ export function SettingsScreen() {
               >
                 <UiHStack spacing={8}>
                   <UiImage systemName="trash" />
-                  <UiText size={17}>Clear Cache</UiText>
+                  <UiText size={17}>{t('settings.clearCache')}</UiText>
                   <UiSpacer />
                 </UiHStack>
               </UiButton>
               <UiButton onPress={handleLogout} disabled={isLoggingOut}>
                 <UiHStack spacing={8}>
                   <UiImage systemName="rectangle.portrait.and.arrow.right" />
-                  <UiText size={17}>{isLoggingOut ? 'Logging out...' : 'Logout'}</UiText>
+                  <UiText size={17}>{isLoggingOut ? t('settings.loggingOut') : t('settings.logout')}</UiText>
                   <UiSpacer />
+                </UiHStack>
+              </UiButton>
+            </UiSection>
+
+            <UiSection title={t('settings.support')}>
+              <UiButton onPress={() => Linking.openURL('https://buymeacoffee.com/shreyaspapi')}>
+                <UiHStack spacing={8}>
+                  <UiImage systemName="cup.and.saucer.fill" />
+                  <UiText size={17}>{t('settings.buyMeACoffee')}</UiText>
+                  <UiSpacer />
+                  <UiImage systemName="chevron.right" />
+                </UiHStack>
+              </UiButton>
+              <UiButton onPress={() => Linking.openURL('https://github.com/shreyaspapi/parity')}>
+                <UiHStack spacing={8}>
+                  <UiImage systemName="heart.fill" />
+                  <UiText size={17}>{t('settings.githubSponsor')}</UiText>
+                  <UiSpacer />
+                  <UiImage systemName="chevron.right" />
                 </UiHStack>
               </UiButton>
             </UiSection>
@@ -507,7 +527,7 @@ export function SettingsScreen() {
         {/* Server Management */}
         <Surface style={[styles.section, { backgroundColor: cardBg }]} elevation={0}>
           <PaperText variant="labelLarge" style={[styles.sectionTitle, { color: accentColor }]}>
-            Management
+            {t('settings.management')}
           </PaperText>
           <List.Item
             title={t('servers.title')}
@@ -526,7 +546,7 @@ export function SettingsScreen() {
             {t('settings.serverInformation')}
           </PaperText>
           <List.Item
-            title="Active Server"
+            title={t('settings.activeServer')}
             titleStyle={{ color: textPrimary }}
             description={activeServerName || t('settings.notConnected')}
             descriptionStyle={{ color: successColor, fontWeight: '500' }}
@@ -610,22 +630,22 @@ export function SettingsScreen() {
         {/* Actions */}
         <Surface style={[styles.section, { backgroundColor: cardBg }]} elevation={0}>
           <PaperText variant="labelLarge" style={[styles.sectionTitle, { color: accentColor }]}>
-            {t('settings.actions') || 'Actions'}
+            {t('settings.actions')}
           </PaperText>
           <List.Item
             title={t('settings.clearCache')}
             titleStyle={{ color: textPrimary }}
-            description="Clear all cached data"
+            description={t('settings.clearCachedData')}
             descriptionStyle={{ color: textSecondary }}
             left={(props) => <List.Icon {...props} icon="delete-outline" color={iconColor} />}
             onPress={() => {
-              Alert.alert(t('settings.clearCache'), t('settings.clearCacheDescription') || 'This will clear all cached data.', [
+              Alert.alert(t('settings.clearCache'), t('settings.clearCacheDescription'), [
                 { text: t('common.cancel'), style: 'cancel' },
                 {
-                  text: 'Clear',
+                  text: t('common.delete'),
                   onPress: async () => {
                     await apolloClient.clearStore();
-                    Alert.alert('Success', t('settings.cacheCleared') || 'Cache cleared successfully');
+                    Alert.alert(t('common.ok'), t('settings.cacheCleared'));
                   },
                 },
               ]);
@@ -638,6 +658,32 @@ export function SettingsScreen() {
             left={(props) => <List.Icon {...props} icon="logout" color={dangerColor} />}
             onPress={handleLogout}
             disabled={isLoggingOut}
+          />
+        </Surface>
+
+        {/* Support Section */}
+        <Surface style={[styles.section, { backgroundColor: cardBg }]} elevation={0}>
+          <PaperText variant="labelLarge" style={[styles.sectionTitle, { color: accentColor }]}>
+            {t('settings.support')}
+          </PaperText>
+          <List.Item
+            title={t('settings.buyMeACoffee')}
+            titleStyle={{ color: textPrimary }}
+            description={t('settings.buyMeACoffeeDescription')}
+            descriptionStyle={{ color: textSecondary }}
+            left={(props) => <List.Icon {...props} icon="coffee" color={iconColor} />}
+            right={(props) => <MaterialCommunityIcons name="chevron-right" size={24} color={iconColor} />}
+            onPress={() => Linking.openURL('https://buymeacoffee.com/shreyaspapi')}
+          />
+          <Divider style={{ backgroundColor: dividerColor }} />
+          <List.Item
+            title={t('settings.githubSponsor')}
+            titleStyle={{ color: textPrimary }}
+            description={t('settings.githubSponsorDescription')}
+            descriptionStyle={{ color: textSecondary }}
+            left={(props) => <List.Icon {...props} icon="heart" color={iconColor} />}
+            right={(props) => <MaterialCommunityIcons name="chevron-right" size={24} color={iconColor} />}
+            onPress={() => Linking.openURL('https://github.com/shreyaspapi/parity')}
           />
         </Surface>
 

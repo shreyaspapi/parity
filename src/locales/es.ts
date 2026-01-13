@@ -89,6 +89,7 @@ export default {
     arrayDisks: 'Discos del array',
     of: 'de',
     unassignedDevices: 'Dispositivos no asignados',
+    cacheDrives: 'Unidades de caché',
     stopArrayTitle: 'Detener array',
     stopArrayMessage: 'Detener desconectará el array.',
     spinUpTitle: 'Activar',
@@ -102,6 +103,7 @@ export default {
     demoModeDisabled: 'Las operaciones del array están deshabilitadas en modo demo',
     comingSoon: 'funcionalidad próximamente',
     clean: 'limpio',
+    errorLoadingSystem: 'Error al cargar la información del sistema',
   },
 
   // Docker Screen
@@ -121,6 +123,10 @@ export default {
     start: 'Iniciar',
     stop: 'Detener',
     restart: 'Reiniciar',
+    details: 'Detalles',
+    total: 'Total',
+    running: 'En ejecución',
+    stopped: 'Detenido',
     errorDockerUnavailable: 'El servicio Docker no está disponible. Inicia el array y asegúrate de que Docker esté habilitado en Configuración > Docker.',
     errorDockerPermission: 'Acceso denegado para Docker. Verifica que tu clave API tenga permisos de lectura DOCKER.',
     errorLoadingContainers: 'Error al cargar contenedores',
@@ -149,6 +155,9 @@ export default {
     running: 'Ejecutándose',
     stopped: 'Detenidas',
     total: 'Total',
+    details: 'Detalles',
+    poweredOn: 'Encendida',
+    poweredOff: 'Apagada',
     start: 'Iniciar',
     stop: 'Detener',
     errorLoadingVMs: 'Error al cargar VMs',
@@ -216,6 +225,7 @@ export default {
     pollingUpdated: 'Frecuencia de sondeo actualizada a',
     clearCache: 'Limpiar caché',
     clearCacheDescription: 'Esto limpiará todos los datos en caché y actualizará desde el servidor.',
+    clearCachedData: 'Limpiar todos los datos en caché',
     cacheCleared: 'Caché limpiado exitosamente',
     logoutConfirm: '¿Estás seguro de que quieres cerrar sesión?',
     logoutSuccess: 'Sesión cerrada exitosamente',
@@ -246,6 +256,17 @@ export default {
     loggingOut: 'Cerrando sesión...',
     unraidMobileApp: 'Aplicación móvil Unraid',
     builtWith: 'Construido con React Native & Expo',
+    // Management Section
+    management: 'Gestión',
+    activeServer: 'Servidor activo',
+    serverUrl: 'URL del servidor',
+    // Support Section
+    support: 'Soporte',
+    buyMeACoffee: 'Invítame un café',
+    buyMeACoffeeDescription: 'Apoya al desarrollador con un café',
+    githubSponsor: 'Patrocinador de GitHub',
+    githubSponsorDescription: 'Patrocina este proyecto en GitHub',
+    supportDeveloper: 'Apoya al desarrollador',
   },
 
   // Error Messages
@@ -264,5 +285,6 @@ export default {
     containers: 'Cargando contenedores...',
     vms: 'Cargando máquinas virtuales...',
     servers: 'Cargando servidores...',
+    notifications: 'Cargando notificaciones...',
   },
 };

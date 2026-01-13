@@ -245,11 +245,11 @@ export function DashboardScreen() {
               <View style={styles.chartsContainer}>
               <LineChart data={cpuChartData} width={Dimensions.get('window').width - 64} height={140} label={t('dashboard.cpuUsage')} color="#007aff" maxValue={100} minValue={0} />
                 <View style={[styles.divider, { backgroundColor: isDark ? '#2c2c2e' : '#e5e5ea', marginVertical: 16 }]} />
-              <LineChart data={memoryChartData} width={Dimensions.get('window').width - 64} height={140} label="Memory Usage" color="#34c759" maxValue={100} minValue={0} />
+              <LineChart data={memoryChartData} width={Dimensions.get('window').width - 64} height={140} label={t('dashboard.memoryUsage')} color="#34c759" maxValue={100} minValue={0} />
               </View>
             ) : (
               <View style={{ padding: 20, alignItems: 'center' }}>
-              <Text style={{ fontSize: 13, color: isDark ? '#8e8e93' : '#6e6e73' }}>Collecting data...</Text>
+              <Text style={{ fontSize: 13, color: isDark ? '#8e8e93' : '#6e6e73' }}>{t('dashboard.collectingData')}</Text>
               </View>
             )}
           </Card>
@@ -308,9 +308,9 @@ export function DashboardScreen() {
                       disabled={startingArray || stoppingArray}
                       onPress={async () => {
                         Alert.alert(t('dashboard.stopArrayTitle'), t('dashboard.stopArrayMessage'), [
-                            { text: 'Cancel', style: 'cancel' },
+                            { text: t('common.cancel'), style: 'cancel' },
                             {
-                              text: 'Stop',
+                              text: t('dashboard.stop'),
                               style: 'destructive',
                               onPress: async () => {
                                 if (isDemoMode) {
@@ -327,7 +327,7 @@ export function DashboardScreen() {
                       <Text style={[styles.operationButtonText, { color: '#ff3b30' }]}>{t('dashboard.stop')}</Text>
                     </TouchableOpacity>
                     <Text style={[styles.operationDescription, { color: isDark ? '#8e8e93' : '#6e6e73' }]}>
-                      <Text style={{ fontWeight: '600' }}>Stop</Text> will take the array off-line.
+                      <Text style={{ fontWeight: '600' }}>{t('dashboard.stop')}</Text> {t('dashboard.stopDescription')}
                     </Text>
                   </View>
                 ) : (
@@ -339,9 +339,9 @@ export function DashboardScreen() {
                       style={{ borderColor: '#ff3b30', borderRadius: 12 }}
                       onPress={() => {
                         Alert.alert(t('dashboard.stopArrayTitle'), t('dashboard.stopArrayMessage'), [
-                          { text: 'Cancel', style: 'cancel' },
+                          { text: t('common.cancel'), style: 'cancel' },
                           {
-                            text: 'Stop',
+                            text: t('dashboard.stop'),
                             style: 'destructive',
                             onPress: async () => {
                               if (isDemoMode) {
@@ -356,10 +356,10 @@ export function DashboardScreen() {
                       }}
                       disabled={startingArray || stoppingArray}
                     >
-                      Stop Array
+                      {t('dashboard.stopArrayTitle')}
                     </PaperButton>
                     <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant, marginTop: 8 }}>
-                      Stop will take the array off-line
+                      {t('dashboard.stop')} {t('dashboard.stopDescription')}
                     </PaperText>
                   </View>
                 )
@@ -383,7 +383,7 @@ export function DashboardScreen() {
                       <Text style={[styles.operationButtonText, { color: '#34c759' }]}>{t('dashboard.start')}</Text>
                     </TouchableOpacity>
                     <Text style={[styles.operationDescription, { color: isDark ? '#8e8e93' : '#6e6e73' }]}>
-                      <Text style={{ fontWeight: '600' }}>Start</Text> will bring the array online.
+                      <Text style={{ fontWeight: '600' }}>{t('dashboard.start')}</Text> {t('dashboard.startDescription')}
                     </Text>
                   </View>
                 ) : (
@@ -405,10 +405,10 @@ export function DashboardScreen() {
                       }}
                       disabled={startingArray || stoppingArray}
                     >
-                      Start Array
+                      {t('dashboard.start')} Array
                     </PaperButton>
                     <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant, marginTop: 8 }}>
-                      Start will bring the array online
+                      {t('dashboard.start')} {t('dashboard.startDescription')}
                     </PaperText>
                   </View>
                 )

@@ -200,9 +200,9 @@ export function VMsScreen() {
               <UiVStack alignment="leading" spacing={20} modifiers={[padding({ all: 24 })]}>
                 <UiHStack alignment="center" spacing={20} modifiers={[frame({ maxWidth: Number.POSITIVE_INFINITY })]}>
                   <UiVStack alignment="leading" spacing={8} modifiers={[layoutPriority(1)]}>
-                    <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>Virtual Machines</UiText>
+                    <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>{t('vms.title')}</UiText>
                     <UiText size={34} weight="bold">
-                      {totals.total === 0 ? 'No Data' : `${totals.total}`}
+                      {totals.total === 0 ? t('common.noData') : `${totals.total}`}
                     </UiText>
                   </UiVStack>
                   <UiSpacer />
@@ -219,9 +219,9 @@ export function VMsScreen() {
                   <UiHStack spacing={12} alignment="center">
                     <UiText size={24} color="#007aff">●</UiText>
                     <UiVStack alignment="leading" spacing={4} modifiers={[layoutPriority(1)]}>
-                      <UiText size={17} weight="semibold">Total</UiText>
+                      <UiText size={17} weight="semibold">{t('vms.total')}</UiText>
                       <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>
-                        {totals.total === 0 ? 'No virtual machines detected' : 'Discovered guests'}
+                        {totals.total === 0 ? t('vms.noVMsDetected') : t('vms.discoveredGuests')}
                       </UiText>
                     </UiVStack>
                     <UiSpacer />
@@ -231,7 +231,7 @@ export function VMsScreen() {
                   <UiHStack spacing={12} alignment="center">
                     <UiText size={24} color="#34c759">●</UiText>
                     <UiVStack alignment="leading" spacing={4} modifiers={[layoutPriority(1)]}>
-                      <UiText size={17} weight="semibold">Running</UiText>
+                      <UiText size={17} weight="semibold">{t('vms.running')}</UiText>
                       <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>
                         {totals.running === 0 ? t('vms.noVMsActive') : t('vms.currentlyPoweredOn')}
                       </UiText>
@@ -243,7 +243,7 @@ export function VMsScreen() {
                   <UiHStack spacing={12} alignment="center">
                     <UiText size={24} color="#ff3b30">●</UiText>
                     <UiVStack alignment="leading" spacing={4} modifiers={[layoutPriority(1)]}>
-                      <UiText size={17} weight="semibold">Stopped</UiText>
+                      <UiText size={17} weight="semibold">{t('vms.stopped')}</UiText>
                       <UiText size={15} color={isDark ? '#8e8e93' : '#6e6e73'}>
                         {totals.stopped === 0 ? t('vms.noVMsStopped') : t('vms.currentlyPoweredOff')}
                       </UiText>
@@ -254,7 +254,7 @@ export function VMsScreen() {
                 </UiVStack>
               </UiVStack>
             </UiSection>
-            <UiSection title="Virtual Machines">
+            <UiSection title={t('vms.title')}>
               {vms.length === 0 ? <UiText size={15}>{t('vms.noVMs')}</UiText> : null}
               {vms.map((item) => {
                 const isRunning = item.state?.toLowerCase() === 'running';
@@ -290,10 +290,10 @@ export function VMsScreen() {
         {/* Header */}
         <View style={styles.header}>
           <PaperText variant="headlineMedium" style={{ fontWeight: 'bold', color: paperTheme.colors.onBackground }}>
-            Virtual Machines
+            {t('vms.title')}
           </PaperText>
           <PaperText variant="bodyMedium" style={{ color: paperTheme.colors.onSurfaceVariant, marginTop: 4 }}>
-            {t('vms.manageVMs') || 'Manage your virtual machines'}
+            {t('vms.manageVMs')}
           </PaperText>
         </View>
 
@@ -305,21 +305,21 @@ export function VMsScreen() {
                 <View style={[styles.statDot, { backgroundColor: '#007aff' }]} />
                 <View>
                   <PaperText variant="headlineLarge" style={{ fontWeight: 'bold' }}>{totals.total}</PaperText>
-                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Total</PaperText>
+                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('vms.total')}</PaperText>
                 </View>
               </View>
               <View style={styles.statItem}>
                 <View style={[styles.statDot, { backgroundColor: '#34c759' }]} />
                 <View>
                   <PaperText variant="headlineLarge" style={{ fontWeight: 'bold', color: '#34c759' }}>{totals.running}</PaperText>
-                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Running</PaperText>
+                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('vms.running')}</PaperText>
                 </View>
               </View>
               <View style={styles.statItem}>
                 <View style={[styles.statDot, { backgroundColor: '#ff3b30' }]} />
                 <View>
                   <PaperText variant="headlineLarge" style={{ fontWeight: 'bold', color: '#ff3b30' }}>{totals.stopped}</PaperText>
-                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Stopped</PaperText>
+                  <PaperText variant="bodySmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('vms.stopped')}</PaperText>
                 </View>
               </View>
             </View>
@@ -327,7 +327,7 @@ export function VMsScreen() {
           {totals.total > 0 && (
             <View style={styles.progressSection}>
               <View style={styles.progressLabels}>
-                <PaperText variant="labelSmall">Running</PaperText>
+                <PaperText variant="labelSmall">{t('vms.running')}</PaperText>
                 <PaperText variant="labelSmall">{((totals.running / totals.total) * 100).toFixed(0)}%</PaperText>
               </View>
               <ProgressBar
@@ -351,7 +351,7 @@ export function VMsScreen() {
         {/* VM List */}
         <View style={styles.section}>
           <PaperText variant="titleMedium" style={{ marginBottom: 12, fontWeight: '600' }}>
-            Virtual Machines
+            {t('vms.title')}
           </PaperText>
 
           {filteredVMs.length === 0 ? (
@@ -410,7 +410,7 @@ export function VMsScreen() {
                           titleStyle={{ color: isRunning ? '#ff3b30' : '#34c759' }}
                         />
                         <Divider />
-                        <Menu.Item leadingIcon="information-outline" onPress={() => setMenuVisible(null)} title="Details" />
+                        <Menu.Item leadingIcon="information-outline" onPress={() => setMenuVisible(null)} title={t('vms.details')} />
                       </Menu>
                     </View>
 
@@ -424,7 +424,7 @@ export function VMsScreen() {
                         style={{ backgroundColor: isRunning ? '#34c75915' : '#ff3b3015' }}
                         textStyle={{ color: isRunning ? '#34c759' : '#ff3b30', fontSize: 12 }}
                       >
-                        {isRunning ? 'Powered On' : 'Powered Off'}
+                        {isRunning ? t('vms.poweredOn') : t('vms.poweredOff')}
                       </Chip>
                     </View>
 

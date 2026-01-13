@@ -195,7 +195,7 @@ export function NotificationsScreen() {
 
   // Early returns must come after all hooks
   if (!hasInitialData && !isDemoMode && loading) {
-    return <LoadingScreen message="Loading notifications..." />;
+    return <LoadingScreen message={t('loading.notifications')} />;
   }
 
   if (error && !hasInitialData) {
@@ -443,7 +443,7 @@ export function NotificationsScreen() {
     <Surface style={styles.paperSummaryCard} elevation={2}>
       <View style={styles.paperSummaryHeader}>
         <PaperText variant="labelLarge" style={{ color: paperTheme.colors.onSurfaceVariant, textTransform: 'uppercase' }}>
-          {selectedType === 'UNREAD' ? t('notifications.unread') : t('notifications.archived')} Summary
+          {selectedType === 'UNREAD' ? t('notifications.unread') : t('notifications.archived')} {t('notifications.summary')}
         </PaperText>
         <Badge size={24} style={{ backgroundColor: paperTheme.colors.primary }}>{activeCounts?.total ?? 0}</Badge>
       </View>
@@ -454,21 +454,21 @@ export function NotificationsScreen() {
             <MaterialCommunityIcons name="information" size={20} color={IMPORTANCE_COLORS.INFO} />
           </View>
           <PaperText variant="headlineSmall" style={{ fontWeight: 'bold' }}>{activeCounts?.info ?? 0}</PaperText>
-          <PaperText variant="labelSmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Info</PaperText>
+          <PaperText variant="labelSmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('notifications.info')}</PaperText>
         </View>
         <View style={styles.paperStatItem}>
           <View style={[styles.paperStatIcon, { backgroundColor: `${IMPORTANCE_COLORS.WARNING}20` }]}>
             <MaterialCommunityIcons name="alert" size={20} color={IMPORTANCE_COLORS.WARNING} />
           </View>
           <PaperText variant="headlineSmall" style={{ fontWeight: 'bold' }}>{activeCounts?.warning ?? 0}</PaperText>
-          <PaperText variant="labelSmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Warnings</PaperText>
+          <PaperText variant="labelSmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('notifications.warnings')}</PaperText>
         </View>
         <View style={styles.paperStatItem}>
           <View style={[styles.paperStatIcon, { backgroundColor: `${IMPORTANCE_COLORS.ALERT}20` }]}>
             <MaterialCommunityIcons name="alert-circle" size={20} color={IMPORTANCE_COLORS.ALERT} />
           </View>
           <PaperText variant="headlineSmall" style={{ fontWeight: 'bold' }}>{activeCounts?.alert ?? 0}</PaperText>
-          <PaperText variant="labelSmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>Alerts</PaperText>
+          <PaperText variant="labelSmall" style={{ color: paperTheme.colors.onSurfaceVariant }}>{t('notifications.alerts')}</PaperText>
         </View>
       </View>
     </Surface>
@@ -508,10 +508,10 @@ export function NotificationsScreen() {
       />
       <View style={styles.paperChipRow}>
         {[
-          { key: 'ALL' as ImportanceFilter, label: 'All', icon: 'filter-variant' },
-          { key: 'ALERT' as ImportanceFilter, label: 'Alerts', icon: 'alert-circle', color: IMPORTANCE_COLORS.ALERT },
-          { key: 'WARNING' as ImportanceFilter, label: 'Warnings', icon: 'alert', color: IMPORTANCE_COLORS.WARNING },
-          { key: 'INFO' as ImportanceFilter, label: 'Info', icon: 'information', color: IMPORTANCE_COLORS.INFO },
+          { key: 'ALL' as ImportanceFilter, label: t('notifications.all'), icon: 'filter-variant' },
+          { key: 'ALERT' as ImportanceFilter, label: t('notifications.alerts'), icon: 'alert-circle', color: IMPORTANCE_COLORS.ALERT },
+          { key: 'WARNING' as ImportanceFilter, label: t('notifications.warnings'), icon: 'alert', color: IMPORTANCE_COLORS.WARNING },
+          { key: 'INFO' as ImportanceFilter, label: t('notifications.info'), icon: 'information', color: IMPORTANCE_COLORS.INFO },
         ].map(({ key, label, icon, color }) => (
           <Chip
             key={key}

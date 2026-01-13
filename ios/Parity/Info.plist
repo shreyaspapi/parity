@@ -46,8 +46,26 @@
       <true/>
       <key>NSAllowsLocalNetworking</key>
       <true/>
-      <key>NSExceptionAllowsInsecureHTTPLoads</key>
+      <key>NSAllowsArbitraryLoadsForMedia</key>
       <true/>
+      <key>NSAllowsArbitraryLoadsInWebContent</key>
+      <true/>
+      <key>NSExceptionDomains</key>
+      <dict>
+        <key>localhost</key>
+        <dict>
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+          <key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+          <key>NSIncludesSubdomains</key>
+          <true/>
+          <key>NSTemporaryExceptionMinimumTLSVersion</key>
+          <string>TLSv1.0</string>
+          <key>NSThirdPartyExceptionAllowsInsecureHTTPLoads</key>
+          <true/>
+        </dict>
+      </dict>
     </dict>
     <key>NSUserActivityTypes</key>
     <array>
