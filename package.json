@@ -1,7 +1,7 @@
 {
   "name": "parity",
   "displayName": "Parity: Unraid Client",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A modern, feature-rich mobile app for monitoring and managing your Unraid servers",
   "main": "expo-router/entry",
   "author": "Parity Contributors",
