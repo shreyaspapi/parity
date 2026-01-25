@@ -26,7 +26,8 @@
           "NSAllowsLocalNetworking": true,
           "NSExceptionAllowsInsecureHTTPLoads": true
         }
-      }
+      },
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
